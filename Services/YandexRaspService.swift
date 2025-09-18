@@ -1,13 +1,14 @@
 import Foundation
+import UIKit
 import OpenAPIRuntime
 import OpenAPIURLSession
 
 protocol YandexRaspServiceProtocol {
     func getNearestStations(lat: Double, lng: Double, distance: Int) async throws -> Components.Schemas.Stations
-    func getScheduleBetweenStations(from: String, to: String, date: String?) async throws -> Components.Schemas.Segments
+    func getScheduleBetweenStations(from: String, to: String, date: String?, limit: Int?) async throws -> Components.Schemas.Segments
     func getStationSchedule(station: String, date: String?, event: String) async throws -> Components.Schemas.ScheduleResponse
     func getRouteStations(uid: String, from: String?, to: String?) async throws -> Components.Schemas.ThreadStationsResponse
-    func getNearestCity(lat: Double, lng: Double, distance: Int?) async throws -> Components.Schemas.NearestCityResponse
+    func getNearestCity(lat: Double, lng: Double, distance: Int) async throws -> Components.Schemas.NearestCityResponse
     func getCarrierInfo(code: String, system: String?) async throws -> Components.Schemas.CarrierResponse
     func getCopyright() async throws -> Components.Schemas.CopyrightResponse
     func getAllStations() async throws -> Components.Schemas.AllStationsResponse
@@ -44,23 +45,32 @@ final class YandexRaspService: YandexRaspServiceProtocol {
     }
     
     // MARK: - Schedule Between Stations
-    func getScheduleBetweenStations(from: String, to: String, date: String? = nil) async throws -> Components.Schemas.Segments {
-        let response = try await client.getSchedualBetweenStations(query: .init(
+    func getScheduleBetweenStations(
+        from: String,
+        to: String,
+        date: String? = nil,
+        limit: Int? = nil
+    ) async throws -> Components.Schemas.Segments {
+        let response = try await client.getScheduleBetweenStations(query: .init(
             apikey: apikey,
             from: from,
             to: to,
-            date: date
+            format: .json,
+            lang: "ru_RU",
+            date: date,
+            limit: limit
         ))
         return try response.ok.body.json
     }
+
     
     // MARK: - Station Schedule
     func getStationSchedule(station: String, date: String? = nil, event: String = "departure") async throws -> Components.Schemas.ScheduleResponse {
         let response = try await client.getStationSchedule(query: .init(
             apikey: apikey,
             station: station,
-            lang: "ru",
-            format: nil,
+            lang: "ru_RU",
+            format: "json",
             date: date,
             transport_types: nil,
             event: event, // Добавляем обязательный параметр
@@ -77,20 +87,22 @@ final class YandexRaspService: YandexRaspServiceProtocol {
             apikey: apikey,
             uid: uid,
             from: from,
-            to: to
+            to: to,
+            format: "json",
+            lang: "ru_RU"
         ))
         return try response.ok.body.json
     }
     
     // MARK: - Nearest City
-    func getNearestCity(lat: Double, lng: Double, distance: Int? = nil) async throws -> Components.Schemas.NearestCityResponse {
+    func getNearestCity(lat: Double, lng: Double, distance: Int = 50) async throws -> Components.Schemas.NearestCityResponse {
         let response = try await client.getNearestCity(query: .init(
             apikey: apikey,
             lat: lat,
             lng: lng,
             distance: distance,
-            lang: "ru", // Добавляем язык
-            format: nil
+            lang: "ru_RU", // Добавляем язык
+            format: "json"
         ))
         return try response.ok.body.json
     }
@@ -159,191 +171,132 @@ func testGetNearestStations() {
     }
 }
 
-/// 2. Тест поиска расписания между станциями
-func testGetScheduleBetweenStations() {
-    Task {
-        do {
-            let client = Client(
-                serverURL: try Servers.Server1.url(),
-                transport: URLSessionTransport()
-            )
-            
-            let service = YandexRaspService(
-                client: client,
-                apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c" // Ваш ключ
-            )
-            
-            print("🚄 Fetching schedule between stations...")
-            
-            // Используем актуальные коды станций из реального поиска
-            let segments = try await service.getScheduleBetweenStations(
-                from: "s9600213", // Санкт-Петербург (Главный)
-                to: "s2000001",   // Москва (Ярославский)
-                date: nil // Пусть API использует текущую дату
-            )
-            
-            print("✅ Successfully fetched \(segments.segments?.count ?? 0) segments")
-            if let firstSegment = segments.segments?.first {
-                print("   First route: \(firstSegment.thread?.title ?? "Unknown")")
-                
-                // Преобразуем Date в String для вывода
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                dateFormatter.timeZone = TimeZone(identifier: "Europe/Moscow")
-                
-                if let departureDate = firstSegment.departure {
-                    let departureString = dateFormatter.string(from: departureDate)
-                    print("   Departure: \(departureString)")
-                } else {
-                    print("   Departure: Unknown")
-                }
-                
-                if let arrivalDate = firstSegment.arrival {
-                    let arrivalString = dateFormatter.string(from: arrivalDate)
-                    print("   Arrival: \(arrivalString)")
-                } else {
-                    print("   Arrival: Unknown")
-                }
-                
-                // Сохраняем UID для теста маршрута
-                if let uid = firstSegment.thread?.uid {
-                    print("   Thread UID: \(uid) - use this for route stations test")
-                }
-            }
-        } catch {
-            print("❌ Error fetching schedule between stations: \(error)")
-            print("Error details: \(error.localizedDescription)")
-            await testGetActualStationCodes()
+///2. Тест поиска расписания между станциями
+func testGetScheduleBetweenStations() async throws {
+    let service = YandexRaspService(
+        apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"
+    )
+
+    print("🚄 Fetching schedule between stations...")
+
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    let today = dateFormatter.string(from: Date())
+    
+    let segments = try await service.getScheduleBetweenStations(
+        from: "s2000001",
+        to: "s9623131",
+        date: today,
+        limit: 1
+    )
+
+    print("✅ Successfully fetched \(segments.segments?.count ?? 0) segments")
+
+    if let firstSegment = segments.segments?.first {
+        print("   First route: \(firstSegment.thread?.title ?? "Unknown")")
+        if let departure = firstSegment.departure {
+            print("   Departure: \(departure)")
+        }
+        if let arrival = firstSegment.arrival {
+            print("   Arrival: \(arrival)")
         }
     }
 }
 
 /// 3. Тест получения расписания по станции
-func testGetStationSchedule() {
-    Task {
-        do {
-            let client = Client(
-                serverURL: try Servers.Server1.url(),
-                transport: URLSessionTransport()
-            )
-            
-            let service = YandexRaspService(
-                client: client,
-                apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"
-            )
-            
-            print("📅 Fetching station schedule...")
-            
-            let scheduleResponse = try await service.getStationSchedule(
-                station: "s9600213", // Санкт-Петербург (Главный)
-                date: "2024-12-19",
-                event: "departure"
-            )
-            
-            print("✅ Successfully fetched schedule for station: \(scheduleResponse.station?.title ?? "Unknown")")
-            print("   Scheduled items count: \(scheduleResponse.schedule?.count ?? 0)")
-            if let firstSchedule = scheduleResponse.schedule?.first {
-      //          print("   Departure: \(firstSchedule.departure ?? "Unknown")")
-                print("   Thread: \(firstSchedule.thread?.title ?? "Unknown")")
-            }
-        } catch {
-            print("❌ Error fetching station schedule: \(error)")
-        }
+func testGetStationSchedule() async throws {
+    let service = YandexRaspService(
+        apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"
+    )
+    
+    print("📅 Fetching station schedule...")
+    
+    // Получаем текущую дату в правильном формате
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    let today = dateFormatter.string(from: Date())
+    
+    let scheduleResponse = try await service.getStationSchedule(
+        station: "s9600213", // Санкт-Петербург (Главный)
+        date: today,
+        event: "departure"
+    )
+    
+    print("✅ Successfully fetched schedule for station: \(scheduleResponse.station?.title ?? "Unknown")")
+    print("   Scheduled items count: \(scheduleResponse.schedule?.count ?? 0)")
+    if let firstSchedule = scheduleResponse.schedule?.first {
+        print("   Thread: \(firstSchedule.thread?.title ?? "Unknown")")
     }
 }
 
 /// 4. Тест получения станций маршрута
-func testGetRouteStations() {
-    Task {
-        do {
-            let service = YandexRaspService(
-                apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"
-            )
-            
-            print("🛤️ Fetching route stations...")
-            
-            // Сначала получаем реальный UID из расписания
-            let segments = try await service.getScheduleBetweenStations(
-                from: "s2000001", // Москва
-                to: "s9600213",   // СПб
-                date: "2024-12-19"
-            )
-            
-            guard let firstSegment = segments.segments?.first,
-                  let uid = firstSegment.thread?.uid else {
-                print("⏭️ No segments found, skipping route stations test")
-                return
-            }
-            
-            print("   Using UID: \(uid)")
-            
-            let threadResponse = try await service.getRouteStations(
-                uid: uid,
-                from: nil,
-                to: nil
-            )
-            
-            print("✅ Successfully fetched route: \(threadResponse.title ?? "Unknown")")
-            print("   From: \(threadResponse.from?.title ?? "Unknown")")
-            print("   To: \(threadResponse.to?.title ?? "Unknown")")
-            print("   Stops count: \(threadResponse.stops?.count ?? 0)")
-            
-        } catch {
-            print("❌ Error fetching route stations: \(error)")
-            print("   Tip: The UID might be expired or invalid")
+func testGetRouteStations() async throws {
+    let service = YandexRaspService(
+        apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"
+    )
+    
+    print("🛤️ Fetching route stations...")
+    
+    // Сначала получаем расписание, чтобы взять uid
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    let today = dateFormatter.string(from: Date())
+    
+    let segments = try await service.getScheduleBetweenStations(
+        from: "s2000001",   // Москва Курский
+        to: "s9623131",     //ТУла 
+        date: today,
+        limit: 1
+    )
+    
+    guard let firstSegment = segments.segments?.first,
+          let uid = firstSegment.thread?.uid else {
+        print("⚠️ No segments found or UID missing")
+        return
+    }
+    
+    print("✅ Got UID: \(uid)")
+    
+    // Теперь получаем станции маршрута по UID
+    let threadResponse = try await service.getRouteStations(
+        uid: uid,
+        from: nil,
+        to: nil
+    )
+    
+    print("✅ Successfully fetched route: \(threadResponse.title ?? "Unknown")")
+    print("   From: \(threadResponse.from?.title ?? "Unknown")")
+    print("   To: \(threadResponse.to?.title ?? "Unknown")")
+    print("   Stops count: \(threadResponse.stops?.count ?? 0)")
+    
+    if let stops = threadResponse.stops?.prefix(5) {
+        print("   First 5 stops:")
+        for stop in stops {
+            print("     - \(stop.station?.title ?? "Unknown")")
         }
     }
 }
 
 /// 5. Тест поиска ближайшего города
-func testGetNearestCity() {
-    Task {
-        do {
-            let client = Client(
-                serverURL: try Servers.Server1.url(),
-                transport: URLSessionTransport()
-            )
-            
-            let service = YandexRaspService(
-                client: client,
-                apikey: "ВАШ_КЛЮЧ" // !!! ЗАМЕНИТЕ НА СВОЙ РЕАЛЬНЫЙ КЛЮЧ !!!
-            )
-            
-            print("🏙️ Fetching nearest city...")
-            let coordinates = [
-                (55.7558, 37.6173), // Москва
-                (59.9343, 30.3351), // Санкт-Петербург
-                (54.7431, 55.9678)  // Уфа
-            ]
-            
-            for (index, (lat, lng)) in coordinates.enumerated() {
-                print("   Trying coordinates \(index + 1): \(lat), \(lng)")
-                
-                do {
-                    let cityResponse = try await service.getNearestCity(
-                        lat: lat,
-                        lng: lng,
-                        distance: 50
-                    )
-                    
-                    print("✅ Successfully found nearest city: \(cityResponse.title ?? "Unknown")")
-                    print("   Distance: \(cityResponse.distance ?? 0) km")
-                    print("   Code: \(cityResponse.code ?? "Unknown")")
-                    return // Успех, выходим
-                    
-                } catch {
-                    print("   Attempt \(index + 1) failed: \(error.localizedDescription)")
-                    if index < coordinates.count - 1 {
-                        try await Task.sleep(nanoseconds: 1_000_000_000)
-                    }
-                }
-            }
-        } catch {
-            print("❌ Error fetching nearest city: \(error)")
-            print("   Tip: Check if coordinates are in a supported region")
-        }
-    }
+func testGetNearestCity() async throws {
+    let service = YandexRaspService(
+        apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"
+    )
+    
+    print("🏙️ Fetching nearest city...")
+    
+    // Попробуем координаты Москвы
+    let cityResponse = try await service.getNearestCity(
+        lat: 55.7558,
+        lng: 37.6173,
+        distance: 50
+    )
+    
+    print("✅ Successfully found nearest city: \(cityResponse.title ?? "Unknown")")
+    print("   Distance: \(cityResponse.distance ?? 0) km")
+    print("   Code: \(cityResponse.code ?? "Unknown")")
 }
+
 /// 6. Тест получения информации о перевозчике
 func testGetCarrierInfo() {
     Task {
@@ -484,37 +437,38 @@ func testGetActualStationCodes() {
 // MARK: - Функция для запуска всех тестов
 
 /// Функция для запуска всех тестов последовательно
-func runAllTests() {
+func runAllTests() async {
     print("🚀 Starting API tests...\n")
     
-    // Запускаем тесты с небольшими задержками, чтобы не перегружать API
-    Task {
-        await testGetActualStationCodes()
+    do {
+        try await testGetNearestStations()
         try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetNearestStations()
-        try await Task.sleep(nanoseconds: 2_000_000_000) // 2 секунды
+        try await testGetScheduleBetweenStations()
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetScheduleBetweenStations()
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await testGetStationSchedule()
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetStationSchedule()
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await testGetRouteStations()
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetRouteStations()
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await testGetNearestCity()
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetNearestCity()
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await testGetCarrierInfo()
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetCarrierInfo()
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await testGetCopyright()
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         
-        testGetCopyright()
-        try await Task.sleep(nanoseconds: 2_000_000_000)
+        try await testGetAllStations()
         
-        testGetAllStations()
+        print("\n✅ All tests completed successfully!")
         
-        print("\n✅ All tests completed!")
+    } catch {
+        print("❌ Error during tests: \(error)")
+        print("Error details: \(error.localizedDescription)")
     }
 }
+

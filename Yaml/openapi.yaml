@@ -86,9 +86,9 @@ paths:
   /v3.0/search/:
     get:
       tags:
-        - getSchedualBetweenStations
+        - getScheduleBetweenStations
       summary: Расписание рейсов между станциями
-      operationId: getSchedualBetweenStations
+      operationId: getScheduleBetweenStations
       parameters:
         - name: apikey
           in: query
@@ -114,42 +114,52 @@ paths:
           required: false
           schema:
             type: string
+            enum: [json, xml]
+            default: json
         - name: lang
           in: query
           description: Язык ответа (например, ru_RU)
           required: false
           schema:
             type: string
+            default: ru_RU
         - name: date
           in: query
           description: Дата в формате YYYY-MM-DD
           required: false
           schema:
             type: string
+            format: date
+            example: 2025-09-18
         - name: transport_types
           in: query
           description: Тип транспорта (plane, train, bus и т.д.)
           required: false
           schema:
             type: string
+            enum: [plane, train, suburban, bus, water, helicopter]
         - name: offset
           in: query
           description: Смещение результатов
           required: false
           schema:
             type: integer
+            minimum: 0
         - name: limit
           in: query
           description: Лимит на количество результатов, по умолчанию 100
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 1000
         - name: result_timezone
           in: query
           description: Часовой пояс для дат и времени в ответе
           required: false
           schema:
             type: string
+            enum: [UTC, Europe/Moscow, local]
         - name: transfers
           in: query
           description: Включить маршруты с пересадками (true/false)
@@ -721,10 +731,10 @@ components:
       properties:
         arrival:
           type: string
-          format: date-time
+         # format: date-time
         departure:
           type: string
-          format: date-time
+         # format: date-time
         stop_time:
           type: integer
           description: Продолжительность остановки в секундах

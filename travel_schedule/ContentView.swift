@@ -16,8 +16,9 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
-        .onAppear {
-            runAllTests()
+        .task {
+           await runAllTests()
+            await testGetActualStationCodes()
         }
     }
 }

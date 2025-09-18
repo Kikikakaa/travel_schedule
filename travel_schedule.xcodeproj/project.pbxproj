@@ -35,6 +35,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		CE2152322E7C29F6003832B6 /* Help  */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Help ";
+			sourceTree = "<group>";
+		};
 		CE4128682E7835FF0071BCD3 /* Yaml */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Yaml;
@@ -92,6 +97,7 @@
 		CE9EC0442E6A3B4800724B68 = {
 			isa = PBXGroup;
 			children = (
+				CE2152322E7C29F6003832B6 /* Help  */,
 				CE41286F2E7839EA0071BCD3 /* Services */,
 				CE4128682E7835FF0071BCD3 /* Yaml */,
 				CE9EC04F2E6A3B4800724B68 /* travel_schedule */,
@@ -128,6 +134,7 @@
 				CE4128672E7833AA0071BCD3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				CE2152322E7C29F6003832B6 /* Help  */,
 				CE4128682E7835FF0071BCD3 /* Yaml */,
 				CE41286F2E7839EA0071BCD3 /* Services */,
 				CE9EC04F2E6A3B4800724B68 /* travel_schedule */,
