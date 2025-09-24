@@ -464,7 +464,7 @@ paths:
         "200":
           description: Успешный ответ
           content:
-            text/html: # формат ответа
+            text/html; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/AllStationsResponse'
 components:

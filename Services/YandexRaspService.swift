@@ -127,16 +127,52 @@ final class YandexRaspService: YandexRaspServiceProtocol {
     
     // MARK: - All Stations
     func getAllStations() async throws -> Components.Schemas.AllStationsResponse {
-       let response = try await client.getAllStations(query: .init(apikey: apikey))
+        let response = try await client.getAllStations(
+            .init(
+                query: .init(apikey: apikey),
+                headers: .init(
+                    accept: [
+                        .init(contentType: .init(rawValue: "text/html")!)
+                    ]
+                )
+            )
+        )
 
-       let responseBody = try response.ok.body.html
-
-       let limit = 50 * 1024 * 1024 // 50Mb
-       var fullData = try await Data(collecting: responseBody, upTo: limit)
-
-       let allStations = try JSONDecoder().decode(Components.Schemas.AllStationsResponse.self, from: fullData)
-
-       return allStations
+        switch response {
+        case .ok(let result):
+            var fullData = Data()
+            for try await chunk in try result.body.text_html_charset_utf_hyphen_8 {
+                fullData.append(contentsOf: chunk)
+            }
+            print("📡 YandexRaspService: Received \(fullData.count) bytes of data")
+            if let string = String(data: fullData, encoding: .utf8) {
+                print("📄 First 1000 chars of response: \(string.prefix(1000))")
+            }
+            do {
+                let allStations = try JSONDecoder().decode(Components.Schemas.AllStationsResponse.self, from: fullData)
+                // Debug settlement codes
+                let settlementCount = allStations.countries?.flatMap { $0.regions ?? [] }
+                    .flatMap { $0.settlements ?? [] }.count ?? 0
+                let validCodeCount = allStations.countries?.flatMap { $0.regions ?? [] }
+                    .flatMap { $0.settlements ?? [] }
+                    .filter { $0.codes?.yandex_code != nil && !$0.codes!.yandex_code!.isEmpty }.count ?? 0
+                print("📊 YandexRaspService: Found \(settlementCount) settlements, \(validCodeCount) with valid yandex_code")
+                return allStations
+            } catch {
+                print("❌ YandexRaspService: Decoding error: \(error)")
+                throw error
+            }
+        case .undocumented(let status, let data):
+            var buffer = Data()
+            if let body = data.body {
+                for try await chunk in body {
+                    buffer.append(contentsOf: chunk)
+                }
+            }
+            let errorText = String(data: buffer, encoding: .utf8) ?? "unknown"
+            print("‼️ YandexRaspService: Undocumented (\(status)): \(errorText)")
+            throw URLError(.badServerResponse)
+        }
     }
 }
 

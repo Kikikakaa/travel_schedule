@@ -35,9 +35,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CE2152322E7C29F6003832B6 /* Help  */ = {
+		CE15D9032E8345B9009ACEB1 /* NetworkErrors */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Help ";
+			path = NetworkErrors;
 			sourceTree = "<group>";
 		};
 		CE4128682E7835FF0071BCD3 /* Yaml */ = {
@@ -48,6 +48,16 @@
 		CE41286F2E7839EA0071BCD3 /* Services */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Services;
+			sourceTree = "<group>";
+		};
+		CE9BED0B2E82F867005A5DE3 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CE9BED132E832BED005A5DE3 /* VIewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VIewModels;
 			sourceTree = "<group>";
 		};
 		CE9EC04F2E6A3B4800724B68 /* travel_schedule */ = {
@@ -97,10 +107,12 @@
 		CE9EC0442E6A3B4800724B68 = {
 			isa = PBXGroup;
 			children = (
-				CE2152322E7C29F6003832B6 /* Help  */,
+				CE15D9032E8345B9009ACEB1 /* NetworkErrors */,
 				CE41286F2E7839EA0071BCD3 /* Services */,
 				CE4128682E7835FF0071BCD3 /* Yaml */,
 				CE9EC04F2E6A3B4800724B68 /* travel_schedule */,
+				CE9BED132E832BED005A5DE3 /* VIewModels */,
+				CE9BED0B2E82F867005A5DE3 /* Models */,
 				CE9EC0602E6A3B4900724B68 /* travel_scheduleTests */,
 				CE9EC06A2E6A3B4900724B68 /* travel_scheduleUITests */,
 				CE9EC04E2E6A3B4800724B68 /* Products */,
@@ -134,9 +146,11 @@
 				CE4128672E7833AA0071BCD3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				CE2152322E7C29F6003832B6 /* Help  */,
+				CE15D9032E8345B9009ACEB1 /* NetworkErrors */,
 				CE4128682E7835FF0071BCD3 /* Yaml */,
 				CE41286F2E7839EA0071BCD3 /* Services */,
+				CE9BED0B2E82F867005A5DE3 /* Models */,
+				CE9BED132E832BED005A5DE3 /* VIewModels */,
 				CE9EC04F2E6A3B4800724B68 /* travel_schedule */,
 			);
 			name = travel_schedule;
@@ -435,13 +449,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"travel_schedule/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"travel_schedule/Assets.xcassets\"";
 				DEVELOPMENT_TEAM = 2UCS8747P3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -464,13 +479,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"travel_schedule/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"travel_schedule/Assets.xcassets\"";
 				DEVELOPMENT_TEAM = 2UCS8747P3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
