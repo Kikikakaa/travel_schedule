@@ -50,7 +50,7 @@ final class CitySearchViewModel: ObservableObject {
                 print("🌍 CitySearchViewModel: Using regionCode=\(regionCode), countryName=\(currentCountryName)")
 
                 // Offload heavy processing to background
-                let processedList = try await Task.detached {
+                let processedList = await Task.detached {
                     var byId = [String: City]()
                     var skippedCount = 0
                     var totalSettlements = 0

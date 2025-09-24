@@ -3,22 +3,22 @@ import OpenAPIURLSession
 
 // MARK: - Root
 struct ContentView: View {
-    enum selectedTab { case schedule, settings }
-    @State private var tab: selectedTab = .schedule
+    enum SelectedTab { case schedule, settings }
+    @State private var tab: SelectedTab = .schedule
     
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack { ScheduleScreen() }
                 .tabItem {
-                    Image("Schedule").renderingMode(.template)
+                    Image(.schedule).renderingMode(.template)
                 }
-                .tag(selectedTab.schedule)
+                .tag(SelectedTab.schedule)
             
             NavigationStack { SettingsScreen() }
                 .tabItem {
-                    Image("Settings").renderingMode(.template)
+                    Image(.settings).renderingMode(.template)
                 }
-                .tag(selectedTab.settings)
+                .tag(SelectedTab.settings)
         }
         .tint(.ypBlack)
     }
@@ -75,11 +75,9 @@ struct ScheduleScreen: View {
                             StoryCard(story: story)
                         }
                     }
-                    // .background(Color.red.opacity(0.5))
                     .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 24)
-                //.background(Color.green.opacity(0.5))
                 SearchPanel(
                     from: fromText,
                     to: toText,
@@ -89,7 +87,6 @@ struct ScheduleScreen: View {
                 )
                 .padding(.top, 20)
                 .padding([.horizontal, .bottom], 16)
-                // .background(Color.yellow.opacity(0.5))
                 
                 if canSearch {
                     NavigationLink {
