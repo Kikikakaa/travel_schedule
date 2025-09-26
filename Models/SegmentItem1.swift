@@ -4,7 +4,8 @@ import SwiftUI
 struct SegmentItem: Identifiable, Hashable {
     let id: String
     let carrierName: String
-    let carrierLogo: String?      // пока локальное имя картинки
+    let carrierCode: String?
+    let carrierLogo: String?
     let departureDateShort: String
     let departureTime: String
     let arrivalTime: String
@@ -12,13 +13,13 @@ struct SegmentItem: Identifiable, Hashable {
     let transferText: String?
 
     static let mock: [SegmentItem] = [
-        .init(id: "1", carrierName: "РЖД", carrierLogo: "LogoStub1",
+        .init(id: "1", carrierName: "РЖД", carrierCode: "RZD", carrierLogo: "LogoStub1",
               departureDateShort: "14 января", departureTime: "22:30", arrivalTime: "08:15",
               durationText: "20 часов", transferText: "С пересадкой в Костроме"),
-        .init(id: "2", carrierName: "ФГК", carrierLogo: "LogoStub2",
+        .init(id: "2", carrierName: "ФГК", carrierCode: "FGK", carrierLogo: "LogoStub2",
               departureDateShort: "15 января", departureTime: "01:15", arrivalTime: "09:00",
               durationText: "9 часов", transferText: nil),
-        .init(id: "3", carrierName: "Урал логистика", carrierLogo: "LogoStub3",
+        .init(id: "3", carrierName: "Урал логистика", carrierCode: "UL", carrierLogo: "LogoStub3",
               departureDateShort: "16 января", departureTime: "12:30", arrivalTime: "21:00",
               durationText: "9 часов", transferText: nil),
     ]
@@ -44,6 +45,6 @@ struct ContentPlaceholder: View {
 }
 
 // MARK: - Preview
-#Preview {
-    ResultsView(from: "Москва (Ярославский вокзал)", to: "Санкт-Петербург (Балтийский вокзал)")
-}
+//#Preview {
+//    ResultsView(from: "Москва (Ярославский вокзал)", to: "Санкт-Петербург (Балтийский вокзал)")
+//}

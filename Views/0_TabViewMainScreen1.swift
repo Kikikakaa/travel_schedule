@@ -5,16 +5,21 @@ import OpenAPIURLSession
 struct ContentView: View {
     enum SelectedTab { case schedule, settings }
     @State private var tab: SelectedTab = .schedule
+    private let service: YandexRaspServiceProtocol
+    
+    init() {
+        self.service = YandexRaspService(apikey: API.key)
+    }
     
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { ScheduleScreen() }
+            NavigationStack { ScheduleScreen(service: service) }
                 .tabItem {
                     Image(.schedule).renderingMode(.template)
                 }
                 .tag(SelectedTab.schedule)
             
-            NavigationStack { SettingsScreen() }
+            NavigationStack { SettingsScreen(service: service) }
                 .tabItem {
                     Image(.settings).renderingMode(.template)
                 }
@@ -27,7 +32,12 @@ struct ContentView: View {
 // MARK: - Schedule
 struct ScheduleScreen: View {
     @State private var from = StationSelection()
-    @State private var to   = StationSelection()
+    @State private var to = StationSelection()
+    
+    // stories
+    @State private var viewedStories: Set<Int> = []
+    @State private var currentStoryIndex: Int? = nil
+    @State private var showStory = false
     
     @State private var showFromSearch = false
     @State private var showToSearch = false
@@ -48,21 +58,14 @@ struct ScheduleScreen: View {
         )
     }
     
-    init() {
-         let service = YandexRaspService(apikey: API.key)
-         self.service = service
-         _stationsVM = StateObject(wrappedValue: AllStationsViewModel(service: service))
-     }
-
+    init(service: YandexRaspServiceProtocol) {
+        self.service = service
+        _stationsVM = StateObject(wrappedValue: AllStationsViewModel(service: service))
+    }
     
     private let locationService: LocationServiceProtocol = LocationService()
     
-    private let stories: [Story] = [
-        .init(image: "story1", title: "Text Text"),
-        .init(image: "story2", title: "Text Text"),
-        .init(image: "story3", title: "Text Text"),
-        .init(image: "story4", title: "Text Text"),
-    ]
+    private let stories: [Stories] = [.story1, .story2, .story3, .story4]
     
     var canSearch: Bool { !from.isEmpty && !to.isEmpty }
     
@@ -71,8 +74,14 @@ struct ScheduleScreen: View {
             VStack(spacing: 0) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
-                        ForEach(stories) { story in
-                            StoryCard(story: story)
+                        ForEach(stories.indices, id: \.self) { i in
+                            let s = stories[i]
+                            StoryCard(story: s, isViewed: viewedStories.contains(i))
+                                .onTapGesture {
+                                    viewedStories.insert(i)
+                                    currentStoryIndex = i
+                                    showStory = true
+                                }
                         }
                     }
                     .padding(.horizontal, 16)
@@ -90,7 +99,7 @@ struct ScheduleScreen: View {
                 
                 if canSearch {
                     NavigationLink {
-                        ResultsView(from: from.displayText, to: to.displayText)
+                        ResultsView(from: from.displayText, to: to.displayText, service: service)
                     } label: {
                         Text("Найти")
                             .font(.system(size: 17, weight: .bold))
@@ -101,7 +110,8 @@ struct ScheduleScreen: View {
                     }
                 }
             }
-        }        .onAppear {
+        }
+        .onAppear {
             // Автоматически запустить тест при открытии экрана
             testGetAllStations()
         }
@@ -115,7 +125,6 @@ struct ScheduleScreen: View {
             )
             .toolbar(.hidden, for: .tabBar)
         }
-        
         .navigationDestination(isPresented: $showToSearch) {
             CitySearchView(
                 title: "Куда",
@@ -126,56 +135,80 @@ struct ScheduleScreen: View {
             )
             .toolbar(.hidden, for: .tabBar)
         }
+        .fullScreenCover(isPresented: $showStory) {
+            if let idx = currentStoryIndex {
+                MainStoryView(
+                    stories: stories,
+                    startIndex: idx,
+                    onClose: { showStory = false }
+                )
+            }
+        }
     }
+    
     private func testGetAllStations() {
-           Task {
-               do {
-                   print("🔄 Начинаем тест getAllStations...")
-                   let stations = try await service.getAllStations()
-                   print("✅ getAllStations успешно выполнена")
-                   print("Количество стран: \(stations.countries?.count ?? 0)")
-                   
-                   // Проверим структуру данных
-                   if let firstCountry = stations.countries?.first {
-                       print("Первая страна: \(firstCountry.title ?? "N/A")")
-                       if let firstRegion = firstCountry.regions?.first {
-                           print("Первый регион: \(firstRegion.title ?? "N/A")")
-                           if let firstSettlement = firstRegion.settlements?.first {
-                               print("Первое поселение: \(firstSettlement.title ?? "N/A")")
-                           }
-                       }
-                   }
-               } catch {
-                   print("❌ Ошибка в getAllStations: \(error)")
-                   print("Тип ошибки: \(type(of: error))")
-               }
-           }
-       }
+        Task {
+            do {
+                print("🔄 Начинаем тест getAllStations...")
+                let stations = try await service.getAllStations()
+                print("✅ getAllStations успешно выполнена")
+                print("Количество стран: \(stations.countries?.count ?? 0)")
+                
+                // Проверим структуру данных
+                if let firstCountry = stations.countries?.first {
+                    print("Первая страна: \(firstCountry.title ?? "N/A")")
+                    if let firstRegion = firstCountry.regions?.first {
+                        print("Первый регион: \(firstRegion.title ?? "N/A")")
+                        if let firstSettlement = firstRegion.settlements?.first {
+                            print("Первое поселение: \(firstSettlement.title ?? "N/A")")
+                        }
+                    }
+                }
+            } catch {
+                print("❌ Ошибка в getAllStations: \(error)")
+                print("Тип ошибки: \(type(of: error))")
+            }
+        }
+    }
 }
 
 // MARK: - Story
 struct Story: Identifiable { let id = UUID(); let image: String; let title: String }
 
 struct StoryCard: View {
-    let story: Story
+    let story: Stories
+    let isViewed: Bool
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            Image(story.image)
-                .resizable()
-                .scaledToFill()
-                .clipped()
+            if let img = story.backgroundImage {
+                Image(uiImage: img)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 92, height: 140)
+                    .clipped()
+            } else {
+                story.backgroundColor
+            }
             
-            Text(story.title)
+            if isViewed {
+                Color.white.opacity(0.5)
+            }
+            
+            Text(story.description)
                 .font(.system(size: 12, weight: .regular))
                 .foregroundColor(.white)
-                .padding(8)
+                .lineLimit(3)
+                .multilineTextAlignment(.leading)
+                .padding(.horizontal, 8)
+                .padding(.bottom, 12)
+                .shadow(radius: 2)
         }
         .frame(width: 92, height: 140)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.blue.opacity(0.7), lineWidth: 3)
+                .stroke(isViewed ? Color.clear : Color.blueUniversal, lineWidth: 3)
         )
     }
 }
@@ -243,6 +276,7 @@ struct SearchPanel: View {
     }
 }
 
-
 // MARK: - Preview
-#Preview { ContentView() }
+#Preview {
+    ContentView()
+}

@@ -1,8 +1,11 @@
 import SwiftUI
+import OpenAPIURLSession
+
 // MARK: - Results
 struct ResultsView: View {
     let from: String
     let to: String
+    let service: YandexRaspServiceProtocol // Added to receive service from 0_TabViewMainScreen1
     @Environment(\.dismiss) private var dismiss
 
     @State private var showFilters = false
@@ -10,7 +13,8 @@ struct ResultsView: View {
     @State private var isLoading = false
     @State private var error: String?
     @State private var filtersApplied = false
-    
+    @State private var selectedItem: SegmentItem? // Added to track selected route
+
     var body: some View {
         ZStack {
             if isLoading {
@@ -33,10 +37,17 @@ struct ResultsView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(items) { item in
-                            SegmentCard(item: item)
-                                .onTapGesture {
-                                    // TODO: переход на детали рейса
-                                }
+                            NavigationLink {
+                                CarrierInfoViewStub(
+                                    carrierName: item.carrierName,
+                                    carrierCode: item.carrierCode,
+                                    carrierLogo: item.carrierLogo
+                                )
+                                .toolbar(.hidden, for: .tabBar)
+                            } label: {
+                                SegmentCard(item: item)
+                                    .contentShape(Rectangle())
+                            }
                         }
                     }
                     .padding([.horizontal, .vertical], 16)
@@ -96,7 +107,7 @@ struct ResultsView: View {
         .navigationDestination(isPresented: $showFilters) {
             FiltersView(
                 onBack: { showFilters = false },
-                onApply: { filtersApplied = true; showFilters = false } // <-- NEW
+                onApply: { filtersApplied = true; showFilters = false }
             )
         }
         .onAppear { load() }
@@ -107,6 +118,7 @@ struct ResultsView: View {
         error = nil
     }
 }
+
 // MARK: - Card
 private struct SegmentCard: View {
     let item: SegmentItem
@@ -125,7 +137,6 @@ private struct SegmentCard: View {
                     }
                 }
                 .frame(width: 38, height: 38)
-                //.background(Color.white)
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text(item.carrierName)
@@ -135,18 +146,14 @@ private struct SegmentCard: View {
                         Text(transfer)
                             .font(.system(size: 12, weight: .regular))
                             .foregroundColor(.redUniversal)
-    
                     }
                 }
-                //.background(Color.yellow)
 
                 Spacer()
                 Text(item.departureDateShort)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(.blackUniversal)
-
             }
-            //.background(Color.blue)
 
             HStack {
                 Text(item.departureTime)
@@ -166,16 +173,12 @@ private struct SegmentCard: View {
                         .background(.simpleGray)
                 }
                 .padding(.horizontal, 0)
-                //.background(Color.red)
 
                 Text(item.arrivalTime)
                     .font(.system(size: 17, weight: .regular))
                     .foregroundColor(.blackUniversal)
             }
-            //.background(Color.green)
             .frame(height: 40)
-
-
         }
         .padding(8)
         .background(
@@ -185,6 +188,11 @@ private struct SegmentCard: View {
         )
     }
 }
+
 #Preview {
-    ResultsView(from: "Санкт-Петербург", to: "Москва (Ленинградский вокзал)")
+    ResultsView(
+        from: "Санкт-Петербург",
+        to: "Москва (Ленинградский вокзал)",
+        service: YandexRaspService(apikey: "your-api-key")
+    )
 }
