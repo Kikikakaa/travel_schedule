@@ -1,11 +1,7 @@
 import SwiftUI
 
 struct CopyrightView: View {
-    @StateObject private var viewModel: CopyrightViewModel
-
-    init(service: YandexRaspServiceProtocol) {
-        _viewModel = StateObject(wrappedValue: CopyrightViewModel(service: service))
-    }
+    @StateObject private var viewModel = CopyrightViewModel(api: APIProvider.makeDefault())
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {

@@ -1,14 +1,15 @@
 import SwiftUI
 
 // MARK: - FiltersView
+
 struct FiltersView: View {
     let onBack: () -> Void
-    let onApply: () -> Void
+    let onApply: (Filters) -> Void
     
-    @State private var morning = false   // Утро 06:00–12:00
-    @State private var dayTime = false   // День 12:00–18:00
-    @State private var evening = false   // Вечер 18:00–00:00
-    @State private var night = false     // Ночь 00:00–06:00
+    @State private var morning = false   // 06:00–12:00
+    @State private var dayTime = false   // 12:00–18:00
+    @State private var evening = false   // 18:00–00:00
+    @State private var night = false     // 00:00–06:00
     
     enum TransfersChoice { case yes, no }
     @State private var transfers: TransfersChoice?
@@ -21,7 +22,6 @@ struct FiltersView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 
-                // Время отправления
                 Group {
                     SectionHeader("Время отправления")
                     CheckboxRow(title: "Утро 06:00 – 12:00", isOn: $morning)
@@ -30,7 +30,6 @@ struct FiltersView: View {
                     CheckboxRow(title: "Ночь 00:00 – 06:00", isOn: $night)
                 }
                 
-                // Пересадки
                 Group {
                     SectionHeader("Показывать варианты с пересадками")
                     RadioRow(title: "Да",  isSelected: transfers == .yes) { transfers = .yes }
@@ -55,7 +54,14 @@ struct FiltersView: View {
         .safeAreaInset(edge: .bottom) {
             if canApply {
                 Button {
-                    onApply()
+                    let filters = Filters(
+                        morning: morning,
+                        dayTime: dayTime,
+                        evening: evening,
+                        night: night,
+                        transfers: transfers == .yes ? true : (transfers == .no ? false : nil)
+                    )
+                    onApply(filters)
                     onBack()
                 } label: {
                     Text("Применить")
@@ -77,10 +83,11 @@ struct FiltersView: View {
 }
 
 
-// MARK: - Typography (централизация шрифтов)
+// MARK: - Typography
+
 private enum TSFont {
-    static let section = Font.system(size: 24, weight: .bold)      // заголовки секций
-    static let row     = Font.system(size: 17, weight: .regular)   // строки чекбоксов/радио
+    static let section = Font.system(size: 24, weight: .bold)
+    static let row     = Font.system(size: 17, weight: .regular)
 }
 
 // MARK: - Subviews
@@ -96,7 +103,6 @@ private struct SectionHeader: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 16)
             .padding(.bottom, 16)
-        //.background(Color(.systemGray6))
     }
 }
 
@@ -179,12 +185,5 @@ private struct Radio: View {
             }
         }
         .accessibilityLabel(isSelected ? "Выбрано" : "Не выбрано")
-    }
-}
-
-// MARK: - Preview
-#Preview {
-    NavigationStack {
-        FiltersView(onBack: { }, onApply: {})
     }
 }

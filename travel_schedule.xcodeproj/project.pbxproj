@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE3CF2442E8C3EC1002A13C5 /* APIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE74034D2E8C3B87007923FC /* APIProvider.swift */; };
+		CE3CF2452E8C3EC4002A13C5 /* YandexRaspAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE74034E2E8C3B87007923FC /* YandexRaspAPI.swift */; };
+		CE3CF2462E8C3EC9002A13C5 /* YandexRaspAPIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE74034F2E8C3B87007923FC /* YandexRaspAPIProtocol.swift */; };
 		CE41285F2E78330F0071BCD3 /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = CE41285E2E78330F0071BCD3 /* OpenAPIRuntime */; };
 		CE4128622E7833200071BCD3 /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = CE4128612E7833200071BCD3 /* OpenAPIURLSession */; };
 		CE8050F72E86CF6E00ED5C68 /* MaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944A02E86CBEA008CD18B /* MaskView.swift */; };
@@ -14,15 +17,15 @@
 		CE8050F92E86CF7500ED5C68 /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944A22E86CBEA008CD18B /* Stories.swift */; };
 		CE8050FA2E86CF7900ED5C68 /* StoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944A32E86CBEA008CD18B /* StoryView.swift */; };
 		CE8050FC2E86CFCD00ED5C68 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8050FB2E86CFCD00ED5C68 /* CloseButton.swift */; };
-		CEB943D92E8478FD008CD18B /* 0_TabViewMainScreen1.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943CF2E8478FD008CD18B /* 0_TabViewMainScreen1.swift */; };
+		CEB943D92E8478FD008CD18B /* 0_TabViewMainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943CF2E8478FD008CD18B /* 0_TabViewMainScreen.swift */; };
 		CEB943DA2E8478FD008CD18B /* 1_CitySearchViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D02E8478FD008CD18B /* 1_CitySearchViewScreen.swift */; };
 		CEB943DB2E8478FD008CD18B /* 2_StationListViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D12E8478FD008CD18B /* 2_StationListViewScreen.swift */; };
-		CEB943DC2E8478FD008CD18B /* 3_ResultsViewScreen1.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen1.swift */; };
+		CEB943DC2E8478FD008CD18B /* 3_ResultsViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen.swift */; };
 		CEB943DD2E8478FD008CD18B /* 4_FiltersViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D32E8478FD008CD18B /* 4_FiltersViewScreen.swift */; };
-		CEB943DE2E8478FD008CD18B /* SettingsScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D62E8478FD008CD18B /* SettingsScreenView.swift */; };
-		CEB9448F2E86B91A008CD18B /* CarrierInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9448D2E86B91A008CD18B /* CarrierInfoView.swift */; };
+		CEB943DE2E8478FD008CD18B /* 6_SettingsScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D62E8478FD008CD18B /* 6_SettingsScreenView.swift */; };
+		CEB9448F2E86B91A008CD18B /* 7_CarrierInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9448D2E86B91A008CD18B /* 7_CarrierInfoView.swift */; };
 		CEB944902E86B91A008CD18B /* CarrierInfoViewStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9448E2E86B91A008CD18B /* CarrierInfoViewStub.swift */; };
-		CEB944942E86BB5A008CD18B /* CopyrightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944932E86BB5A008CD18B /* CopyrightView.swift */; };
+		CEB944942E86BB5A008CD18B /* 8_CopyrightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944932E86BB5A008CD18B /* 8_CopyrightView.swift */; };
 		CEB944A92E86CD62008CD18B /* 5_MainStoryView_Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944A82E86CD62008CD18B /* 5_MainStoryView_Screen.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,19 +47,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CE74034D2E8C3B87007923FC /* APIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProvider.swift; sourceTree = "<group>"; };
+		CE74034E2E8C3B87007923FC /* YandexRaspAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YandexRaspAPI.swift; sourceTree = "<group>"; };
+		CE74034F2E8C3B87007923FC /* YandexRaspAPIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YandexRaspAPIProtocol.swift; sourceTree = "<group>"; };
 		CE8050FB2E86CFCD00ED5C68 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
 		CE9EC04D2E6A3B4800724B68 /* travel_schedule.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = travel_schedule.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9EC05D2E6A3B4900724B68 /* travel_scheduleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = travel_scheduleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9EC0672E6A3B4900724B68 /* travel_scheduleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = travel_scheduleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CEB943CF2E8478FD008CD18B /* 0_TabViewMainScreen1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 0_TabViewMainScreen1.swift; sourceTree = "<group>"; };
+		CEB943CF2E8478FD008CD18B /* 0_TabViewMainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 0_TabViewMainScreen.swift; sourceTree = "<group>"; };
 		CEB943D02E8478FD008CD18B /* 1_CitySearchViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1_CitySearchViewScreen.swift; sourceTree = "<group>"; };
 		CEB943D12E8478FD008CD18B /* 2_StationListViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 2_StationListViewScreen.swift; sourceTree = "<group>"; };
-		CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3_ResultsViewScreen1.swift; sourceTree = "<group>"; };
+		CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3_ResultsViewScreen.swift; sourceTree = "<group>"; };
 		CEB943D32E8478FD008CD18B /* 4_FiltersViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 4_FiltersViewScreen.swift; sourceTree = "<group>"; };
-		CEB943D62E8478FD008CD18B /* SettingsScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreenView.swift; sourceTree = "<group>"; };
-		CEB9448D2E86B91A008CD18B /* CarrierInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarrierInfoView.swift; sourceTree = "<group>"; };
+		CEB943D62E8478FD008CD18B /* 6_SettingsScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 6_SettingsScreenView.swift; sourceTree = "<group>"; };
+		CEB9448D2E86B91A008CD18B /* 7_CarrierInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 7_CarrierInfoView.swift; sourceTree = "<group>"; };
 		CEB9448E2E86B91A008CD18B /* CarrierInfoViewStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarrierInfoViewStub.swift; sourceTree = "<group>"; };
-		CEB944932E86BB5A008CD18B /* CopyrightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyrightView.swift; sourceTree = "<group>"; };
+		CEB944932E86BB5A008CD18B /* 8_CopyrightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 8_CopyrightView.swift; sourceTree = "<group>"; };
 		CEB944A02E86CBEA008CD18B /* MaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskView.swift; sourceTree = "<group>"; };
 		CEB944A12E86CBEA008CD18B /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		CEB944A22E86CBEA008CD18B /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
@@ -139,13 +145,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE74034C2E8C3B59007923FC /* YandexRaspApi */ = {
+			isa = PBXGroup;
+			children = (
+				CE74034D2E8C3B87007923FC /* APIProvider.swift */,
+				CE74034E2E8C3B87007923FC /* YandexRaspAPI.swift */,
+				CE74034F2E8C3B87007923FC /* YandexRaspAPIProtocol.swift */,
+			);
+			path = YandexRaspApi;
+			sourceTree = "<group>";
+		};
 		CE9EC0442E6A3B4800724B68 = {
 			isa = PBXGroup;
 			children = (
-				CE8050FF2E86D06800ED5C68 /* Helpers */,
+				CE74034C2E8C3B59007923FC /* YandexRaspApi */,
 				CEB9449D2E86CBD6008CD18B /* Stories */,
-				CEB944892E86B8F2008CD18B /* Views */,
 				CE15D9032E8345B9009ACEB1 /* NetworkErrors */,
+				CE8050FF2E86D06800ED5C68 /* Helpers */,
+				CEB944892E86B8F2008CD18B /* Views */,
 				CE41286F2E7839EA0071BCD3 /* Services */,
 				CE4128682E7835FF0071BCD3 /* Yaml */,
 				CE9EC04F2E6A3B4800724B68 /* travel_schedule */,
@@ -170,16 +187,16 @@
 		CEB944892E86B8F2008CD18B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				CEB943CF2E8478FD008CD18B /* 0_TabViewMainScreen1.swift */,
+				CEB943CF2E8478FD008CD18B /* 0_TabViewMainScreen.swift */,
 				CEB943D02E8478FD008CD18B /* 1_CitySearchViewScreen.swift */,
 				CEB943D12E8478FD008CD18B /* 2_StationListViewScreen.swift */,
-				CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen1.swift */,
+				CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen.swift */,
 				CEB943D32E8478FD008CD18B /* 4_FiltersViewScreen.swift */,
 				CEB944A82E86CD62008CD18B /* 5_MainStoryView_Screen.swift */,
-				CEB943D62E8478FD008CD18B /* SettingsScreenView.swift */,
-				CEB9448D2E86B91A008CD18B /* CarrierInfoView.swift */,
+				CEB943D62E8478FD008CD18B /* 6_SettingsScreenView.swift */,
+				CEB9448D2E86B91A008CD18B /* 7_CarrierInfoView.swift */,
+				CEB944932E86BB5A008CD18B /* 8_CopyrightView.swift */,
 				CEB9448E2E86B91A008CD18B /* CarrierInfoViewStub.swift */,
-				CEB944932E86BB5A008CD18B /* CopyrightView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -355,19 +372,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE8050F92E86CF7500ED5C68 /* Stories.swift in Sources */,
-				CEB943D92E8478FD008CD18B /* 0_TabViewMainScreen1.swift in Sources */,
+				CEB943D92E8478FD008CD18B /* 0_TabViewMainScreen.swift in Sources */,
 				CEB943DA2E8478FD008CD18B /* 1_CitySearchViewScreen.swift in Sources */,
 				CE8050F72E86CF6E00ED5C68 /* MaskView.swift in Sources */,
 				CEB943DB2E8478FD008CD18B /* 2_StationListViewScreen.swift in Sources */,
-				CEB943DC2E8478FD008CD18B /* 3_ResultsViewScreen1.swift in Sources */,
+				CEB943DC2E8478FD008CD18B /* 3_ResultsViewScreen.swift in Sources */,
+				CE3CF2452E8C3EC4002A13C5 /* YandexRaspAPI.swift in Sources */,
 				CE8050FA2E86CF7900ED5C68 /* StoryView.swift in Sources */,
 				CEB943DD2E8478FD008CD18B /* 4_FiltersViewScreen.swift in Sources */,
 				CE8050F82E86CF7200ED5C68 /* ProgressBar.swift in Sources */,
-				CEB943DE2E8478FD008CD18B /* SettingsScreenView.swift in Sources */,
-				CEB9448F2E86B91A008CD18B /* CarrierInfoView.swift in Sources */,
+				CEB943DE2E8478FD008CD18B /* 6_SettingsScreenView.swift in Sources */,
+				CE3CF2442E8C3EC1002A13C5 /* APIProvider.swift in Sources */,
+				CE3CF2462E8C3EC9002A13C5 /* YandexRaspAPIProtocol.swift in Sources */,
+				CEB9448F2E86B91A008CD18B /* 7_CarrierInfoView.swift in Sources */,
 				CE8050FC2E86CFCD00ED5C68 /* CloseButton.swift in Sources */,
 				CEB944902E86B91A008CD18B /* CarrierInfoViewStub.swift in Sources */,
-				CEB944942E86BB5A008CD18B /* CopyrightView.swift in Sources */,
+				CEB944942E86BB5A008CD18B /* 8_CopyrightView.swift in Sources */,
 				CEB944A92E86CD62008CD18B /* 5_MainStoryView_Screen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -530,18 +550,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"travel_schedule/Assets.xcassets\"";
 				DEVELOPMENT_TEAM = 2UCS8747P3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Мы используем ваше местоположение, чтобы показать ближайшие станции";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -560,18 +582,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"travel_schedule/Assets.xcassets\"";
 				DEVELOPMENT_TEAM = 2UCS8747P3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Мы используем ваше местоположение, чтобы показать ближайшие станции";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -39,9 +39,9 @@ struct Station: Codable {
 
 struct StationSelection {
     var displayText: String = ""
+    var code: String = ""
     var isEmpty: Bool { displayText.isEmpty }
 }
-
 
 struct Segment: Codable {
     let thread: ThreadInfo

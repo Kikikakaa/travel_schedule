@@ -2,12 +2,14 @@ import CoreLocation
 import Foundation
 
 protocol LocationServiceProtocol {
+    @MainActor
     func requestCurrentLocation() async throws -> CLLocationCoordinate2D
+    
+    @MainActor
     func currentCountryCode() async throws -> String?
 }
 
-
-final class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProtocol {
+final class LocationService: NSObject, LocationServiceProtocol {
     private let locationManager = CLLocationManager()
     private var locationContinuation: CheckedContinuation<CLLocationCoordinate2D, Error>?
     private var permissionContinuation: CheckedContinuation<Bool, Never>?
@@ -17,6 +19,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
         locationManager.delegate = self
     }
 
+    @MainActor
     func requestCurrentLocation() async throws -> CLLocationCoordinate2D {
         let status = locationManager.authorizationStatus
 
@@ -27,10 +30,12 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
                 permissionContinuation = continuation
             }
             guard granted else {
-                throw NSError(domain: "LocationService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Разрешение на геолокацию не выдано"])
+                throw NSError(domain: "LocationService", code: 1,
+                              userInfo: [NSLocalizedDescriptionKey: "Разрешение на геолокацию не выдано"])
             }
         case .denied, .restricted:
-            throw NSError(domain: "LocationService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Разрешение на геолокацию не выдано"])
+            throw NSError(domain: "LocationService", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "Разрешение на геолокацию не выдано"])
         case .authorizedAlways, .authorizedWhenInUse:
             break
         @unknown default:
@@ -44,13 +49,32 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
         }
     }
 
-    // MARK: - CLLocationManagerDelegate
+    @MainActor
+    func currentCountryCode() async throws -> String? {
+        let coordinate = try await requestCurrentLocation()
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
+        return try await withCheckedThrowingContinuation { continuation in
+            CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: placemarks?.first?.isoCountryCode)
+            }
+        }
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+extension LocationService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let coordinate = locations.first?.coordinate {
             locationContinuation?.resume(returning: coordinate)
         } else {
-            locationContinuation?.resume(throwing: NSError(domain: "LocationService", code: 0))
+            locationContinuation?.resume(
+                throwing: NSError(domain: "LocationService", code: 0)
+            )
         }
         locationContinuation = nil
     }
@@ -68,24 +92,5 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
             permissionContinuation?.resume(returning: false)
         }
         permissionContinuation = nil
-    }
-}
-
-extension LocationService {
-    func currentCountryCode() async throws -> String? {
-        let coordinate = try await requestCurrentLocation()
-        let location = CLLocation(latitude: coordinate.latitude,
-                                  longitude: coordinate.longitude)
-
-        return try await withCheckedThrowingContinuation { continuation in
-            CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                let countryCode = placemarks?.first?.isoCountryCode
-                continuation.resume(returning: countryCode)
-            }
-        }
     }
 }
