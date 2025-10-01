@@ -2,27 +2,16 @@ import SwiftUI
 import Combine
 
 struct MainStoryView: View {
-    private let stories: [Stories]
+    @StateObject private var viewModel: MainStoryViewModel
     private let onClose: (() -> Void)?
-    private let secondsPerStory: TimeInterval = 10
-    private let tick: TimeInterval = 0.05
-    
-    @State private var currentIndex: Int
-    @State private var progresses: [CGFloat]
-    @State private var timer: Timer.TimerPublisher
-    @State private var cancellable: Cancellable?
-    @State private var isPaused = false
     
     init(
         stories: [Stories] = [.story1, .story2, .story3, .story4, .story5, .story6],
         startIndex: Int = 0,
         onClose: (() -> Void)? = nil
     ) {
-        self.stories = stories
-        self._currentIndex = State(initialValue: max(0, min(startIndex, stories.count-1)))
-        self._progresses = State(initialValue: Array(repeating: 0, count: stories.count))
         self.onClose = onClose
-        self._timer = State(initialValue: Timer.publish(every: tick, on: .main, in: .common))
+        self._viewModel = StateObject(wrappedValue: MainStoryViewModel(stories: stories, startIndex: startIndex))
     }
     
     var body: some View {
@@ -34,14 +23,14 @@ struct MainStoryView: View {
                 
                 ZStack {
                     Group {
-                        if let img = stories[currentIndex].backgroundImage {
+                        if let img = viewModel.currentStory.backgroundImage {
                             Image(uiImage: img)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: imageHeight)
                                 .frame(maxWidth: .infinity)
                         } else {
-                            stories[currentIndex].backgroundColor
+                            viewModel.currentStory.backgroundColor
                                 .frame(height: imageHeight)
                                 .frame(maxWidth: .infinity)
                         }
@@ -59,26 +48,30 @@ struct MainStoryView: View {
                                     if value.translation.height > 50 {
                                         onClose?()
                                     } else if value.translation.width < -50 {
-                                        nextStory()
+                                        viewModel.nextStory { onClose?() }
                                     } else if value.translation.width > 50 {
-                                        prevStory()
+                                        viewModel.prevStory()
                                     }
                                 }
                         )
                         .onTapGesture { location in
                             let half = geo.size.width / 2
-                            if location.x < half { prevStory() } else { nextStory() }
-                            resetTimer()
+                            if location.x < half {
+                                viewModel.prevStory()
+                            } else {
+                                viewModel.nextStory { onClose?() }
+                            }
+                            viewModel.resetTimer()
                         }
                         .onLongPressGesture(minimumDuration: 0.2) {
-                            isPaused = true
+                            viewModel.isPaused = true
                         } onPressingChanged: { pressing in
-                            if !pressing { isPaused = false }
+                            if !pressing { viewModel.isPaused = false }
                         }
                     
                     VStack(spacing: 4) {
                         HStack(spacing: 4) {
-                            ForEach(stories.indices, id: \.self) { i in
+                            ForEach(viewModel.stories.indices, id: \.self) { i in
                                 GeometryReader { g in
                                     ZStack(alignment: .leading) {
                                         Capsule()
@@ -86,7 +79,7 @@ struct MainStoryView: View {
                                             .frame(height: 6)
                                         Capsule()
                                             .fill(Color.blueUniversal)
-                                            .frame(width: g.size.width * progresses[i], height: 6)
+                                            .frame(width: g.size.width * viewModel.progresses[i], height: 6)
                                     }
                                 }
                                 .frame(height: 6)
@@ -109,12 +102,12 @@ struct MainStoryView: View {
                     VStack {
                         Spacer()
                         VStack(alignment: .leading, spacing: 16) {
-                            Text(stories[currentIndex].title)
+                            Text(viewModel.currentStory.title)
                                 .font(.system(size: 34, weight: .bold))
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.leading)
                             
-                            Text(stories[currentIndex].description)
+                            Text(viewModel.currentStory.description)
                                 .font(.system(size: 20, weight: .regular))
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.leading)
@@ -123,56 +116,21 @@ struct MainStoryView: View {
                         .padding(.bottom, 40)
                     }
                     .frame(width: geo.size.width, height: imageHeight, alignment: .bottomLeading)
-                    
                 }
                 .padding(.top, 7)
                 .padding(.bottom, 17)
                 .frame(height: imageHeight)
             }
-            
-            
         }
-        
         .onAppear {
-            timer = Timer.publish(every: tick, on: .main, in: .common)
-            cancellable = timer.connect()
+            viewModel.startTimer()
         }
-        .onDisappear { cancellable?.cancel() }
-        .onReceive(timer) { _ in guard !isPaused else { return }; tickUpdate() }
-        
-    }
-    
-    // MARK: - Logic
-    private func tickUpdate() {
-        let increment = CGFloat(tick / secondsPerStory)
-        progresses[currentIndex] += increment
-        if progresses[currentIndex] >= 1 {
-            progresses[currentIndex] = 1
-            nextStory()
+        .onDisappear {
+            viewModel.stopTimer()
         }
-    }
-    
-    private func nextStory() {
-        if currentIndex + 1 < stories.count {
-            currentIndex += 1
-        } else {
-            onClose?()
+        .onReceive(viewModel.timer) { _ in
+            viewModel.tickUpdate { onClose?() }
         }
-    }
-    
-    private func prevStory() {
-        if currentIndex > 0 {
-            progresses[currentIndex] = 0
-            currentIndex -= 1
-        } else {
-            progresses[currentIndex] = 0
-        }
-    }
-    
-    private func resetTimer() {
-        cancellable?.cancel()
-        timer = Timer.publish(every: tick, on: .main, in: .common)
-        cancellable = timer.connect()
     }
 }
 

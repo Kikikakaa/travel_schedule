@@ -9,6 +9,26 @@ tags:
 - name: Список ближайших станций
   description: Список ближайших станций
 paths:
+  /v3.0/copyright/:
+    get:
+      operationId: getCopyright
+      summary: Информация об авторских правах
+      parameters:
+        - $ref: "#/components/parameters/apikey"
+        - name: format
+          in: query
+          description: Формат (json/xml)
+          required: false
+          schema:
+            type: string
+            enum: [json, xml]
+      responses:
+        '200':
+          description: Успешный ответ с данными об авторских правах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopyrightResponse'
   /v3.0/nearest_stations/:
     get:
       tags:
@@ -86,9 +106,9 @@ paths:
   /v3.0/search/:
     get:
       tags:
-        - getScheduleBetweenStations
+        - getSchedualBetweenStations
       summary: Расписание рейсов между станциями
-      operationId: getScheduleBetweenStations
+      operationId: getSchedualBetweenStations
       parameters:
         - name: apikey
           in: query
@@ -114,52 +134,42 @@ paths:
           required: false
           schema:
             type: string
-            enum: [json, xml]
-            default: json
         - name: lang
           in: query
           description: Язык ответа (например, ru_RU)
           required: false
           schema:
             type: string
-            default: ru_RU
         - name: date
           in: query
           description: Дата в формате YYYY-MM-DD
           required: false
           schema:
             type: string
-            format: date
-            example: 2025-09-18
         - name: transport_types
           in: query
           description: Тип транспорта (plane, train, bus и т.д.)
           required: false
           schema:
             type: string
-            enum: [plane, train, suburban, bus, water, helicopter]
         - name: offset
           in: query
           description: Смещение результатов
           required: false
           schema:
             type: integer
-            minimum: 0
         - name: limit
           in: query
           description: Лимит на количество результатов, по умолчанию 100
           required: false
           schema:
             type: integer
-            minimum: 1
-            maximum: 1000
         - name: result_timezone
           in: query
           description: Часовой пояс для дат и времени в ответе
           required: false
           schema:
             type: string
-            enum: [UTC, Europe/Moscow, local]
         - name: transfers
           in: query
           description: Включить маршруты с пересадками (true/false)
@@ -403,38 +413,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CarrierResponse'
-  /v3.0/copyright/:
-    get:
-      tags:
-        - getCopyright
-      summary: Информация об авторских правах и используемых данных
-      operationId: getCopyright
-      parameters:
-        - name: apikey
-          in: query
-          description: API key
-          required: true
-          schema:
-            type: string
-        - name: format
-          in: query
-          description: Формат ответа (json или xml)
-          required: false
-          schema:
-            type: string
-        - name: lang
-          in: query
-          description: Язык возвращаемой информации (например, ru_RU)
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Успешный ответ
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CopyrightResponse'
   /v3.0/stations_list/:
     get:
       tags:
@@ -468,7 +446,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/AllStationsResponse'
 components:
+  parameters:
+    apikey:
+      name: apikey
+      in: query
+      required: true
+      description: API ключ
+      schema:
+        type: string
   schemas:
+    CopyrightResponse:
+      type: object
+      properties:
+        copyright:
+          $ref: '#/components/schemas/Copyright'
+    Copyright:
+      type: object
+      properties:
+        logo_vm:
+          type: string
+        logo_vd:
+          type: string
+        logo_hy:
+          type: string
+        logo_hd:
+          type: string
+        logo_vy:
+          type: string
+        logo_hm:
+          type: string
+        url:
+          type: string
+        text:
+          type: string
     Stations:
       type: object
       properties:
@@ -543,6 +553,8 @@ components:
         duration:
           type: integer
           description: Длительность рейса в секундах
+        has_transfers:
+          type: boolean
     Pagination:
       type: object
       properties:
@@ -716,7 +728,7 @@ components:
               description: Код перевозчика в системе Sirena
             iata:
               type: string
-              description: Код перевозчика в системе IATA    
+              description: Код перевозчика в системе IATA
     TicketsInfo:
       type: object
       properties:
@@ -731,10 +743,10 @@ components:
       properties:
         arrival:
           type: string
-         # format: date-time
+          format: date-time
         departure:
           type: string
-         # format: date-time
+          format: date-time
         stop_time:
           type: integer
           description: Продолжительность остановки в секундах
@@ -885,6 +897,8 @@ components:
     CarrierResponse:
       type: object
       properties:
+        carrier:
+            $ref: '#/components/schemas/Carrier'
         carriers:
           type: array
           items:
@@ -944,33 +958,3 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Station'
-    CopyrightResponse:
-      type: object
-      properties:
-        copyright:
-          type: object
-          properties:
-            text:
-              type: string
-              description: Текст с информацией об авторских правах
-            url:
-              type: string
-              description: Ссылка на полную версию условий использования
-        organization:
-          type: string
-          description: Название организации, предоставляющей данные (например, "Яндекс")
-        resources:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Название ресурса данных (например, "Расписания")
-              copyright:
-                type: object
-                properties:
-                  text:
-                    type: string
-                  url:
-                    type: string

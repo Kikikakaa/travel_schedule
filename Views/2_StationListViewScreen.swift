@@ -5,21 +5,22 @@ struct StationListView: View {
     let cityTitle: String
     let cityCode: String
     @ObservedObject var stationsVM: AllStationsViewModel
-    @Binding var selection: String
-
+    @Binding var selection: StationSelection
+    
     @Environment(\.dismiss) private var dismiss
     @State private var query: String = ""
-
+    
     private var allStations: [StationItem] {
         let settlements = stationsVM.countries
             .flatMap { $0.regions ?? [] }
             .flatMap { $0.settlements ?? [] }
             .filter { $0.codes?.yandex_code == city.id }
-
+        
         let stations = settlements
             .flatMap { $0.stations ?? [] }
             .compactMap { st -> StationItem? in
-                guard let code = st.codes?.yandex_code, let title = st.title else { return nil }
+                guard let code = st.codes?.yandex_code,
+                      let title = st.title else { return nil }
                 return StationItem(
                     id: code,
                     title: title,
@@ -27,29 +28,29 @@ struct StationListView: View {
                     stationType: st.station_type
                 )
             }
-
+        
         return stations.sorted {
             $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
         }
     }
-
+    
     private var filtered: [StationItem] {
         guard !query.isEmpty else { return allStations }
         return allStations.filter { $0.title.localizedCaseInsensitiveContains(query) }
     }
-
+    
     var body: some View {
         VStack(spacing: 12) {
-
+            
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
-
+                
                 TextField("Введите запрос", text: $query)
                     .font(.system(size: 17, weight: .regular))
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled(true)
-
+                
                 if !query.isEmpty {
                     Button { query = "" } label: {
                         Image(systemName: "xmark.circle.fill")
@@ -63,12 +64,14 @@ struct StationListView: View {
             .background(Color(.systemGray5))
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .padding(.horizontal, 16)
-
-            // Список станций
+            
             List {
                 ForEach(filtered) { st in
                     Button {
-                        selection = "\(cityTitle) (\(st.title))"
+                        selection = StationSelection(
+                            displayText: "\(cityTitle) (\(st.title))",
+                            code: st.id
+                        )
                         dismiss()
                     } label: {
                         HStack {
@@ -90,35 +93,9 @@ struct StationListView: View {
             .listStyle(.plain)
             .overlay {
                 if allStations.isEmpty {
-                    if #available(iOS 17, *) {
-                        ContentUnavailableView {
-                            Text("Станции не найдены")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.ypBlack)
-                        }
-                    } else {
-                        VStack {
-                            Text("Станции не найдены")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.ypBlack)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
+                    emptyView("Станции не найдены")
                 } else if filtered.isEmpty {
-                    if #available(iOS 17, *) {
-                        ContentUnavailableView {
-                            Text("Не найдено")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.ypBlack)
-                        }
-                    } else {
-                        VStack {
-                            Text("Не найдено")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.ypBlack)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
+                    emptyView("Не найдено")
                 }
             }
         }
@@ -142,6 +119,23 @@ struct StationListView: View {
         .scrollDismissesKeyboard(.immediately)
         .background(Color(.systemBackground))
     }
+    
+    // MARK: - STUB
+    @ViewBuilder
+    private func emptyView(_ text: String) -> some View {
+        if #available(iOS 17, *) {
+            ContentUnavailableView {
+                Text(text)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.ypBlack)
+            }
+        } else {
+            VStack {
+                Text(text)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.ypBlack)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
 }
-
-

@@ -1,20 +1,11 @@
 import SwiftUI
-import OpenAPIURLSession
 
 struct SettingsScreen: View {
-    @AppStorage("isDarkMode") private var isDarkMode = false
-    @State private var showAgreement = false
-    
-    let service: YandexRaspServiceProtocol
-    
-    init(service: YandexRaspServiceProtocol) {
-        self.service = service
-    }
+    @StateObject private var viewModel = SettingsScreenViewModel()
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // контент
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
                         Text("Тёмная тема")
@@ -22,7 +13,7 @@ struct SettingsScreen: View {
                             .foregroundColor(.ypBlack)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Toggle("", isOn: $isDarkMode)
+                        Toggle("", isOn: $viewModel.isDarkMode)
                             .labelsHidden()
                             .tint(.blueUniversal)
                     }
@@ -30,7 +21,7 @@ struct SettingsScreen: View {
                     .padding(.horizontal, 16)
                     
                     Button {
-                        showAgreement = true
+                        viewModel.openAgreement()
                     } label: {
                         HStack(spacing: 0) {
                             Text("Пользовательское соглашение")
@@ -69,8 +60,8 @@ struct SettingsScreen: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 12)
             }
-            .navigationDestination(isPresented: $showAgreement) {
-                CopyrightView(service: service)
+            .navigationDestination(isPresented: $viewModel.showAgreement) {
+                CopyrightView()
                     .toolbar(.hidden, for: .tabBar)
             }
         }
@@ -78,5 +69,5 @@ struct SettingsScreen: View {
 }
 
 #Preview {
-    SettingsScreen(service: YandexRaspService(apikey: "c55262b4-2eb3-4048-bc82-05295a604f6c"))
+    SettingsScreen()
 }

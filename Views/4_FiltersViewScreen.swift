@@ -2,39 +2,36 @@ import SwiftUI
 
 // MARK: - FiltersView
 struct FiltersView: View {
+    @StateObject private var viewModel: FiltersViewModel
     let onBack: () -> Void
-    let onApply: () -> Void
+    let onApply: (Filters) -> Void
     
-    @State private var morning = false   // Утро 06:00–12:00
-    @State private var dayTime = false   // День 12:00–18:00
-    @State private var evening = false   // Вечер 18:00–00:00
-    @State private var night = false     // Ночь 00:00–06:00
-    
-    enum TransfersChoice { case yes, no }
-    @State private var transfers: TransfersChoice?
-    
-    private var canApply: Bool {
-        (morning || dayTime || evening || night) && transfers != nil
+    init(onBack: @escaping () -> Void, onApply: @escaping (Filters) -> Void) {
+        self.onBack = onBack
+        self.onApply = onApply
+        self._viewModel = StateObject(wrappedValue: FiltersViewModel())
     }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 
-                // Время отправления
                 Group {
                     SectionHeader("Время отправления")
-                    CheckboxRow(title: "Утро 06:00 – 12:00", isOn: $morning)
-                    CheckboxRow(title: "День 12:00 – 18:00", isOn: $dayTime)
-                    CheckboxRow(title: "Вечер 18:00 – 00:00", isOn: $evening)
-                    CheckboxRow(title: "Ночь 00:00 – 06:00", isOn: $night)
+                    CheckboxRow(title: "Утро 06:00 – 12:00", isOn: $viewModel.morning)
+                    CheckboxRow(title: "День 12:00 – 18:00", isOn: $viewModel.dayTime)
+                    CheckboxRow(title: "Вечер 18:00 – 00:00", isOn: $viewModel.evening)
+                    CheckboxRow(title: "Ночь 00:00 – 06:00", isOn: $viewModel.night)
                 }
                 
-                // Пересадки
                 Group {
                     SectionHeader("Показывать варианты с пересадками")
-                    RadioRow(title: "Да",  isSelected: transfers == .yes) { transfers = .yes }
-                    RadioRow(title: "Нет", isSelected: transfers == .no)  { transfers = .no  }
+                    RadioRow(title: "Да", isSelected: viewModel.transfers == .yes) {
+                        viewModel.setTransfers(.yes)
+                    }
+                    RadioRow(title: "Нет", isSelected: viewModel.transfers == .no) {
+                        viewModel.setTransfers(.no)
+                    }
                 }
             }
             .padding(.horizontal, 16)
@@ -53,9 +50,16 @@ struct FiltersView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if canApply {
+            if viewModel.canApply {
                 Button {
-                    onApply()
+                    let filters = Filters(
+                        morning: viewModel.morning,
+                        dayTime: viewModel.dayTime,
+                        evening: viewModel.evening,
+                        night: viewModel.night,
+                        transfers: viewModel.transfers == .yes ? true : (viewModel.transfers == .no ? false : nil)
+                    )
+                    onApply(filters)
                     onBack()
                 } label: {
                     Text("Применить")
@@ -70,21 +74,19 @@ struct FiltersView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.2), value: canApply)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.canApply)
             }
         }
     }
 }
 
-
-// MARK: - Typography (централизация шрифтов)
+// MARK: - Typography
 private enum TSFont {
-    static let section = Font.system(size: 24, weight: .bold)      // заголовки секций
-    static let row     = Font.system(size: 17, weight: .regular)   // строки чекбоксов/радио
+    static let section = Font.system(size: 24, weight: .bold)
+    static let row     = Font.system(size: 17, weight: .regular)
 }
 
 // MARK: - Subviews
-
 private struct SectionHeader: View {
     let text: String
     init(_ text: String) { self.text = text }
@@ -96,7 +98,6 @@ private struct SectionHeader: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 16)
             .padding(.bottom, 16)
-        //.background(Color(.systemGray6))
     }
 }
 
@@ -179,12 +180,5 @@ private struct Radio: View {
             }
         }
         .accessibilityLabel(isSelected ? "Выбрано" : "Не выбрано")
-    }
-}
-
-// MARK: - Preview
-#Preview {
-    NavigationStack {
-        FiltersView(onBack: { }, onApply: {})
     }
 }
