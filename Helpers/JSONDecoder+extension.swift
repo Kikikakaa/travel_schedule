@@ -1,4 +1,5 @@
 import Foundation
+
 extension JSONDecoder {
     static var yandex: JSONDecoder {
         let decoder = JSONDecoder()

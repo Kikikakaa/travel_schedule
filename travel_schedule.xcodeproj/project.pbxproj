@@ -24,9 +24,9 @@
 		CEB943DD2E8478FD008CD18B /* 4_FiltersViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D32E8478FD008CD18B /* 4_FiltersViewScreen.swift */; };
 		CEB943DE2E8478FD008CD18B /* 6_SettingsScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB943D62E8478FD008CD18B /* 6_SettingsScreenView.swift */; };
 		CEB9448F2E86B91A008CD18B /* 7_CarrierInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9448D2E86B91A008CD18B /* 7_CarrierInfoView.swift */; };
-		CEB944902E86B91A008CD18B /* CarrierInfoViewStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9448E2E86B91A008CD18B /* CarrierInfoViewStub.swift */; };
+		CEB944902E86B91A008CD18B /* CarrierInfoStubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9448E2E86B91A008CD18B /* CarrierInfoStubView.swift */; };
 		CEB944942E86BB5A008CD18B /* 8_CopyrightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944932E86BB5A008CD18B /* 8_CopyrightView.swift */; };
-		CEB944A92E86CD62008CD18B /* 5_MainStoryView_Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944A82E86CD62008CD18B /* 5_MainStoryView_Screen.swift */; };
+		CEB944A92E86CD62008CD18B /* 5_MainStoryViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB944A82E86CD62008CD18B /* 5_MainStoryViewScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,13 +61,13 @@
 		CEB943D32E8478FD008CD18B /* 4_FiltersViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 4_FiltersViewScreen.swift; sourceTree = "<group>"; };
 		CEB943D62E8478FD008CD18B /* 6_SettingsScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 6_SettingsScreenView.swift; sourceTree = "<group>"; };
 		CEB9448D2E86B91A008CD18B /* 7_CarrierInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 7_CarrierInfoView.swift; sourceTree = "<group>"; };
-		CEB9448E2E86B91A008CD18B /* CarrierInfoViewStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarrierInfoViewStub.swift; sourceTree = "<group>"; };
+		CEB9448E2E86B91A008CD18B /* CarrierInfoStubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarrierInfoStubView.swift; sourceTree = "<group>"; };
 		CEB944932E86BB5A008CD18B /* 8_CopyrightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 8_CopyrightView.swift; sourceTree = "<group>"; };
 		CEB944A02E86CBEA008CD18B /* MaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaskView.swift; sourceTree = "<group>"; };
 		CEB944A12E86CBEA008CD18B /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		CEB944A22E86CBEA008CD18B /* Stories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
 		CEB944A32E86CBEA008CD18B /* StoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryView.swift; sourceTree = "<group>"; };
-		CEB944A82E86CD62008CD18B /* 5_MainStoryView_Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 5_MainStoryView_Screen.swift; sourceTree = "<group>"; };
+		CEB944A82E86CD62008CD18B /* 5_MainStoryViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 5_MainStoryViewScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -192,11 +192,11 @@
 				CEB943D12E8478FD008CD18B /* 2_StationListViewScreen.swift */,
 				CEB943D22E8478FD008CD18B /* 3_ResultsViewScreen.swift */,
 				CEB943D32E8478FD008CD18B /* 4_FiltersViewScreen.swift */,
-				CEB944A82E86CD62008CD18B /* 5_MainStoryView_Screen.swift */,
+				CEB944A82E86CD62008CD18B /* 5_MainStoryViewScreen.swift */,
 				CEB943D62E8478FD008CD18B /* 6_SettingsScreenView.swift */,
 				CEB9448D2E86B91A008CD18B /* 7_CarrierInfoView.swift */,
 				CEB944932E86BB5A008CD18B /* 8_CopyrightView.swift */,
-				CEB9448E2E86B91A008CD18B /* CarrierInfoViewStub.swift */,
+				CEB9448E2E86B91A008CD18B /* CarrierInfoStubView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -386,9 +386,9 @@
 				CE3CF2462E8C3EC9002A13C5 /* YandexRaspAPIProtocol.swift in Sources */,
 				CEB9448F2E86B91A008CD18B /* 7_CarrierInfoView.swift in Sources */,
 				CE8050FC2E86CFCD00ED5C68 /* CloseButton.swift in Sources */,
-				CEB944902E86B91A008CD18B /* CarrierInfoViewStub.swift in Sources */,
+				CEB944902E86B91A008CD18B /* CarrierInfoStubView.swift in Sources */,
 				CEB944942E86BB5A008CD18B /* 8_CopyrightView.swift in Sources */,
-				CEB944A92E86CD62008CD18B /* 5_MainStoryView_Screen.swift in Sources */,
+				CEB944A92E86CD62008CD18B /* 5_MainStoryViewScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,6 +486,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
 			};
 			name = Debug;
 		};
@@ -541,6 +542,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

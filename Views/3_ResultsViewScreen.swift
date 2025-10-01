@@ -15,19 +15,16 @@ struct ResultsView: View {
     let toCode: String
     let fromTitle: String
     let toTitle: String
-    let api: YandexRaspAPIProtocol
+    @StateObject private var viewModel: ResultsViewModel
     @Environment(\.dismiss) private var dismiss
     
-    @State private var showFilters = false
-    @State private var items: [SegmentItem] = []
-    @State private var isLoading = false
-    @State private var showConnectionError = false
-    @State private var showServerError = false
-    @State private var filtersApplied = false
-    @State private var selectedItem: SegmentItem?
-    @State private var allItems: [SegmentItem] = []
-    @State private var currentFilters: Filters?
-    @State private var didLoad = false
+    init(fromCode: String, toCode: String, fromTitle: String, toTitle: String, api: YandexRaspAPIProtocol) {
+        self.fromCode = fromCode
+        self.toCode = toCode
+        self.fromTitle = fromTitle
+        self.toTitle = toTitle
+        self._viewModel = StateObject(wrappedValue: ResultsViewModel(api: api, fromCode: fromCode, toCode: toCode))
+    }
     
     var body: some View {
         ZStack {
@@ -43,21 +40,21 @@ struct ResultsView: View {
                 .padding(.vertical, 12)
                 .background(Color.ypWhite)
                 
-                if isLoading {
+                if viewModel.isLoading {
                     Spacer()
                     ProgressView("Загружаем рейсы…")
                     Spacer()
-                } else if items.isEmpty {
+                } else if viewModel.items.isEmpty {
                     Spacer()
                     ContentPlaceholder(title: "Вариантов нет")
                     Spacer()
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
-                            ForEach(items) { item in
+                            ForEach(viewModel.items) { item in
                                 SegmentCard(item: item)
                                     .contentShape(Rectangle())
-                                    .onTapGesture { selectedItem = item }
+                                    .onTapGesture { viewModel.selectedItem = item }
                             }
                         }
                         .padding([.horizontal, .vertical], 16)
@@ -78,22 +75,22 @@ struct ResultsView: View {
                 }
             }
         }
-        .navigationDestination(isPresented: $showConnectionError) {
+        .navigationDestination(isPresented: $viewModel.showConnectionError) {
             ConnectionErrorView()
                 .toolbar(.hidden, for: .tabBar)
         }
-        .navigationDestination(isPresented: $showServerError) {
+        .navigationDestination(isPresented: $viewModel.showServerError) {
             ServerErrorView()
                 .toolbar(.hidden, for: .tabBar)
         }
         .safeAreaInset(edge: .bottom) {
-            if !items.isEmpty {
+            if !viewModel.items.isEmpty {
                 VStack(spacing: 0) {
-                    Button { showFilters = true } label: {
+                    Button { viewModel.showFilters = true } label: {
                         HStack(spacing: 4) {
                             Text("Уточнить время")
                                 .font(.system(size: 17, weight: .bold))
-                            if filtersApplied {
+                            if viewModel.filtersApplied {
                                 Circle()
                                     .fill(Color.redUniversal)
                                     .frame(width: 8, height: 8)
@@ -110,10 +107,10 @@ struct ResultsView: View {
                 }
             }
         }
-        .navigationDestination(item: $selectedItem) { item in
+        .navigationDestination(item: $viewModel.selectedItem) { item in
             if let (code, system) = item.carrierPreferredCodeAndSystem {
                 CarrierInfoView(
-                    api: api,
+                    api: viewModel.api,
                     carrierCode: code,
                     system: system,
                     fallbackCarrier: item.carrierCodes
@@ -123,102 +120,17 @@ struct ResultsView: View {
                 Text("Нет данных о перевозчике")
             }
         }
-        .navigationDestination(isPresented: $showFilters) {
+        .navigationDestination(isPresented: $viewModel.showFilters) {
             FiltersView(
-                onBack: { showFilters = false },
+                onBack: { viewModel.showFilters = false },
                 onApply: { filters in
-                    currentFilters = filters
-                    applyFilters()
-                    filtersApplied = !(filters.morning == false &&
-                                       filters.dayTime == false &&
-                                       filters.evening == false &&
-                                       filters.night == false &&
-                                       filters.transfers == nil)
-                    showFilters = false
+                    viewModel.applyFilters(filters)
+                    viewModel.showFilters = false
                 }
             )
         }
         .onAppear {
-            if !didLoad {
-                didLoad = true
-                load()
-            } else if currentFilters != nil {
-                applyFilters()
-            }
-        }
-    }
-    
-    private func applyFilters() {
-        guard let filters = currentFilters else {
-            items = sortByDeparture(allItems)
-            return
-        }
-        
-        let filtered = allItems.filter { item in
-            if filters.morning || filters.dayTime || filters.evening || filters.night {
-                guard let dep = timeFormatter.date(from: item.departureTime) else { return false }
-                let hour = Calendar.current.component(.hour, from: dep)
-                var ok = false
-                if filters.morning, (6..<12).contains(hour) { ok = true }
-                if filters.dayTime, (12..<18).contains(hour) { ok = true }
-                if filters.evening, (18..<24).contains(hour) { ok = true }
-                if filters.night, (0..<6).contains(hour) { ok = true }
-                if !ok { return false }
-            }
-            
-            if let needTransfers = filters.transfers {
-                if item.hasTransfers != needTransfers {
-                    return false
-                }
-            }
-            return true
-        }
-        
-        items = sortByDeparture(filtered)
-    }
-    
-    private func load() {
-        isLoading = true
-        
-        let api = self.api
-        
-        Task {
-            do {
-                let segments = try await api.searchRoutes(from: fromCode, to: toCode)
-                let mapped = (segments.segments ?? []).compactMap { SegmentItem(from: $0) }
-                
-                await MainActor.run {
-                    self.allItems = mapped
-                    if currentFilters != nil {
-                        self.applyFilters()
-                    } else {
-                        self.items = sortByDeparture(mapped)
-                    }
-                    self.isLoading = false
-                }
-            } catch {
-                await MainActor.run {
-                    self.isLoading = false
-                    if let urlError = error as? URLError {
-                        switch urlError.code {
-                        case .notConnectedToInternet, .timedOut, .cannotFindHost, .cannotConnectToHost:
-                            self.showConnectionError = true
-                        default:
-                            self.showServerError = true
-                        }
-                    } else {
-                        self.showServerError = true
-                    }
-                }
-            }
-        }
-    }
-
-    
-    private func sortByDeparture(_ array: [SegmentItem]) -> [SegmentItem] {
-        array.sorted {
-            (timeFormatter.date(from: $0.departureTime) ?? .distantPast) <
-            (timeFormatter.date(from: $1.departureTime) ?? .distantPast)
+            viewModel.loadIfNeeded()
         }
     }
 }

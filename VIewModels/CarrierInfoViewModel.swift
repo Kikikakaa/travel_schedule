@@ -2,16 +2,16 @@ import SwiftUI
 
 @MainActor
 final class CarrierInfoViewModel: ObservableObject {
-    private let api: YandexRaspAPIProtocol
-    private let carrierCode: String
-    private let system: String
-    private let fallbackCarrier: Components.Schemas.Carrier?
-    
     @Published var carrier: Components.Schemas.Carrier?
     @Published var isLoading: Bool = false
     @Published var showConnectionError: Bool = false
     @Published var showServerError: Bool = false
     
+    private let api: YandexRaspAPIProtocol
+    private let carrierCode: String
+    private let system: String
+    private let fallbackCarrier: Components.Schemas.Carrier?
+ 
     init(api: YandexRaspAPIProtocol,
          carrierCode: String,
          system: String,
